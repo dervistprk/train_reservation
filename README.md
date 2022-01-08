@@ -1,4 +1,4 @@
-<h1>Tren rezervasyon API</h1>
+<h1>Tren Rezervasyon API</h1>
 <p>Laravel framework kullanılarak PHP programlama dili ile geliştirilmiş tren rezervasyon API.</p>
 <h3>Kullanımı</h2>
 <ul>
