@@ -4,7 +4,7 @@
 <ul>
 <li>XAMPP veya WAMPP gibi paket sunucu programları ile lokalde sunucu ve veritabanı çalıştırılır.</li>
 <li>Proje dosyaları içinde bulunan <code>.env.example</code> dosyası <code>.env</code> olarak düzenlenir.</li>
-<li><code>.env</code> dosyasında bulunan veritabanı konfigürasyonları kendi lokal ayarlarımıza göre değiştirilir.<i>(DB_ ile başlayan konfigürasyonlar)</i></li>
+<li><code>.env</code> dosyasında bulunan veritabanı konfigürasyonları kendi lokal ayarlarımıza göre değiştirilir.<em>(DB_ ile başlayan konfigürasyonlar)</em></li>
 <li>Proje dizininde terminal ekranından <code>composer install</code> komutu ile composer bağımlılıkları yüklenir.</li>
 <li>Proje dizininde terminal ekranından <code>php artisan key:generate</code> komutu ile yeni bir uygulama anahtarı oluşturulur.</li>
 <li>Proje dizininde terminal ekranından <code>php artisan migrate:fresh --seed</code> komutu ile veritabanımıza gerekli tablolar oluşturulur ve içerisine fake veriler yazılır.</li>
