@@ -11,14 +11,12 @@ class ReservationController extends Controller
 {
     public function index()
     {
-        $trains = Train::with('vagons')->get();
-        return $trains;
+        return Train::with('vagons')->get();
     }
 
     public function show($name)
     {
-        $train = Train::with('vagons')->where('adi', $name)->first();
-        return $train;
+        return Train::with('vagons')->where('adi', $name)->first();
     }
 
     public function update(Request $request, $name)
