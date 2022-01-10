@@ -23,18 +23,22 @@ class ReservationController extends Controller
 
     public function update(Request $request, $name)
     {
-        $sonuc = array('RezervasyonYapilabilir' => true, 'YerlesimAyrinti' => array());
-        $train = Train::with('vagons')->where('adi', $name)->first();
+        $sonuc                                  = array('RezervasyonYapilabilir' => true, 'YerlesimAyrinti' => array());
+        $train                                  = Train::with('vagons')->where('adi', $name)->first();
+        $rezervasyon_farkli_vagona_yerlesebilir = $request->input('KisilerFarkliVagonlaraYerlestirilebilir');
+        $rezervasyon_vagon_id                   = $request->input('RezervasyonYapilacakVagonID');
+        $rezervasyon_kisi_sayisi                = $request->input('RezervasyonYapilacakKisiSayisi');
+        $rezervasyon_ayni_vagonda_olacak        = $request->input('KisilerAyniVagondaOlacak');
 
-        if ($request->input('KisilerFarkliVagonlaraYerlestirilebilir') !== null) {
-            if ($request->input('RezervasyonYapilacakKisiSayisi') !== null && $request->input('RezervasyonYapilacakKisiSayisi') >= 1) {
-                if ($request->input('KisilerFarkliVagonlaraYerlestirilebilir') == 0) {
+        if ($rezervasyon_farkli_vagona_yerlesebilir !== null) {
+            if ($rezervasyon_kisi_sayisi !== null && $rezervasyon_kisi_sayisi >= 1) {
+                if ($rezervasyon_farkli_vagona_yerlesebilir == 0) {
                     if ($train->vagons->count() > 0) {
-                        if ($request->input('RezervasyonYapilacakVagonID') !== null) {
-                            $vagon = $train->vagons->where('id', $request->input('RezervasyonYapilacakVagonID'))->where('train_id', $train->id)->first();
+                        if ($rezervasyon_vagon_id !== null) {
+                            $vagon = $train->vagons->where('id', $rezervasyon_vagon_id)->where('train_id', $train->id)->first();
 
                             if ($vagon == null) {
-                                return 'Girdiğiniz "RezervasyonYapilacakVagonID" numaralı vagon seçili trene ait değildir!';
+                                return "Girdiğiniz '$rezervasyon_vagon_id' ID numaralı vagon seçili trene ait değildir!";
                             }
 
                             if ($vagon->doluluk_yuzdesi >= 70) {
@@ -42,11 +46,19 @@ class ReservationController extends Controller
                                 return $sonuc;
                             }
 
+                            if ($rezervasyon_kisi_sayisi == 1 && $train->vagons->count() == 1) {
+                                return '"RezervasyonYapilacakKisiSayisi" değeri 1 girildiğinde "KisilerAyniVagondaOlacak" değeri 0 girilemez!';
+                            }
+
+                            if ($rezervasyon_ayni_vagonda_olacak == 0 && $train->vagons->count() == 1) {
+                                return 'Seçili trene ait 1 adet vagon bulunduğundan dolayı "KisilerAyniVagondaOlacak" değeri 0 girilemez!';
+                            }
+
                             $rezervasyon              = new Reservation();
                             $rezervasyon->train_id    = $train->id;
                             $rezervasyon->vagon_id    = $vagon->id;
-                            $rezervasyon->kisi_sayisi = $request->input('RezervasyonYapilacakKisiSayisi');
-                            $vagon->dolu_koltuk       = $vagon->dolu_koltuk + $request->input('RezervasyonYapilacakKisiSayisi');
+                            $rezervasyon->kisi_sayisi = $rezervasyon_kisi_sayisi;
+                            $vagon->dolu_koltuk       = $vagon->dolu_koltuk + $rezervasyon_kisi_sayisi;
                             $sonuc['YerlesimAyrinti'] = $rezervasyon;
                             $sonuc['Vagon']           = $vagon;
 
@@ -57,18 +69,19 @@ class ReservationController extends Controller
                             return 'Lütfen rezervasyon yapmak istediğiniz "RezervasyonYapilacakVagonID" değerini giriniz!';
                         }
                     } else {
-                        return 'Seçili trene ait rezervasyona uygun vagon bulunamadı.';
+                        $sonuc['RezervasyonYapilabilir'] = false;
+                        return $sonuc;
                     }
                 } else {
-                    if ($request->input('RezervasyonYapilacakVagonID') == null) {
+                    if ($rezervasyon_vagon_id == null) {
                         if ($train->vagons->count() > 1) {
-                            if ($request->input('KisilerAyniVagondaOlacak') == 1) {
-                                if ($request->input('RezervasyonYapilacakKisiSayisi') > 1) {
+                            if ($rezervasyon_ayni_vagonda_olacak == 1) {
+                                if ($rezervasyon_kisi_sayisi > 1) {
                                     $vagons                       = Vagon::where('doluluk_yuzdesi', '<', 70)->where('train_id', $train->id)->get();
                                     $dagitim_yapilabilir_vagon_id = $vagons->pluck('id');
                                     $vagon_id                     = $dagitim_yapilabilir_vagon_id->random();
                                     $vagon                        = Vagon::findOrFail($vagon_id);
-                                    $kisi_sayisi                  = $request->input('RezervasyonYapilacakKisiSayisi');
+                                    $kisi_sayisi                  = $rezervasyon_kisi_sayisi;
                                     $vagon_sayisi                 = $dagitim_yapilabilir_vagon_id->count();
 
                                     if ($vagon_sayisi == 1) {

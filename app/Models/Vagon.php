@@ -13,7 +13,7 @@ class Vagon extends Model
 
     public function train()
     {
-        return $this->hasOne(Train::class, 'id', 'train_id');
+        return $this->belongsTo(Train::class, 'id', 'train_id');
     }
 
     public function reservations()

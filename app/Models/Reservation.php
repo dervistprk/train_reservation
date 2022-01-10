@@ -13,11 +13,11 @@ class Reservation extends Model
 
     public function train()
     {
-        return $this->hasOne(Train::class, 'id', 'train_id');
+        return $this->belongsTo(Train::class, 'id', 'train_id');
     }
 
     public function vagon()
     {
-        return $this->hasOne(Vagon::class, 'id', 'vagon_id');
+        return $this->belongsTo(Vagon::class, 'id', 'vagon_id');
     }
 }
