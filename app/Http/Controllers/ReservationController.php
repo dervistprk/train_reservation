@@ -57,6 +57,7 @@ class ReservationController extends Controller
                             $rezervasyon->vagon_id    = $vagon->id;
                             $rezervasyon->kisi_sayisi = $rezervasyon_kisi_sayisi;
                             $vagon->dolu_koltuk       = $vagon->dolu_koltuk + $rezervasyon_kisi_sayisi;
+                            $vagon->doluluk_yuzdesi   = ($vagon->dolu_koltuk * 100) / $vagon->kapasite;
                             $sonuc['YerlesimAyrinti'] = $rezervasyon;
                             $sonuc['Vagon']           = $vagon;
 
@@ -168,7 +169,7 @@ class ReservationController extends Controller
                 return 'Lütfen "RezervasyonYapilacakKisiSayisi" değerini 0\' dan büyük integer bir değer olarak giriniz!';
             }
         } else {
-            return 'Lütfen kişilerin farklı vagonlara yerleşip yerleşemeyeceği bilgisini giriniz!';
+            return 'Lütfen kişilerin farklı vagonlara yerleşip yerleşemeyeceği bilgisini "RezervasyonYapilacakKisiSayisi" parametre ile giriniz!';
         }
     }
 }
